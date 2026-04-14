@@ -16,6 +16,23 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
+## Artifacts
+
+### Metrix (artifacts/metrix) — `previewPath: /`
+Biometric merchant payment app built with React + Vite. Full payment flow UI:
+- Face verification screen with animated scanner
+- BVN phone number input
+- Authenticating User Data screen with step-by-step progress
+- User details display (sensitive info masked: 123XXXX89 style)
+- Bank selection modal with search (20 Nigerian banks, 5 registered to BVN)
+- Amount + narration entry with quick-select buttons
+- Fingerprint biometric confirmation screen
+- Processing payment screen with animated steps
+- Payment Approved screen with ₦20,000 discount banner
+- Printable receipt with full purchase items, VAT, loyalty discount
+
+All biometric steps are simulated (animated UI only) — no backend required.
+
 ## Key Commands
 
 - `pnpm run typecheck` — full typecheck across all packages
