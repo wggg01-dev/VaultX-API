@@ -23,7 +23,7 @@ export function FaceScanner({ onComplete, isScanning }: FaceScannerProps) {
     let p = 0;
     const interval = setInterval(() => {
       p += 2;
-      setProgress(p);
+      setProgress(Math.min(p, 100));
       if (p >= 100) {
         clearInterval(interval);
         setTimeout(onComplete, 400);

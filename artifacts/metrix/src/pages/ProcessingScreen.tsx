@@ -17,12 +17,14 @@ export function ProcessingScreen({ amount, onNext }: ProcessingScreenProps) {
   ];
 
   useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
     let total = 0;
     steps.forEach((s, i) => {
-      setTimeout(() => setStep(i + 1), total);
+      timers.push(setTimeout(() => setStep(i + 1), total));
       total += s.duration;
     });
-    setTimeout(onNext, total + 500);
+    timers.push(setTimeout(onNext, total + 500));
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   const dots = [0, 1, 2];
