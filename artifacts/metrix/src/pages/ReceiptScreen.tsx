@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Printer, CheckCircle, Home, Trophy, Zap } from "lucide-react";
 import { type Bank } from "../data/banks";
 import { USER_BVN_DATA, PURCHASE_ITEMS } from "../data/banks";
@@ -28,11 +28,22 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
   const [txRef] = useState(generateRef());
   const [isPrinting, setIsPrinting] = useState(false);
 
-  const subtotal = PURCHASE_ITEMS.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
-  const vat = Math.round(subtotal * 0.075);
-  const processingFee = Math.round(subtotal * 0.03);
-  const cashback = Math.round(subtotal * 0.015);
-  const total = subtotal + vat + processingFee - cashback;
+  const enteredAmount = Number(amount);
+
+  const processingFee = Math.round(enteredAmount * 0.03);
+  const cashback = Math.round(enteredAmount * 0.015);
+  const totalCharged = enteredAmount + processingFee - cashback;
+
+  const baseSubtotal = PURCHASE_ITEMS.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
+  const scaleFactor = enteredAmount / baseSubtotal;
+
+  const scaledItems = useMemo(() => {
+    return PURCHASE_ITEMS.map((item) => ({
+      ...item,
+      scaledUnitPrice: Math.round(item.unitPrice * scaleFactor),
+      scaledLineTotal: Math.round(item.qty * item.unitPrice * scaleFactor),
+    }));
+  }, [enteredAmount]);
 
   const handlePrint = () => {
     setIsPrinting(true);
@@ -77,6 +88,7 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
         </div>
 
         <div className="receipt-container receipt-paper rounded-2xl shadow-2xl overflow-hidden border border-gray-200 animate-fade-up">
+
           {/* Header */}
           <div className="gradient-primary px-6 py-5 text-center">
             <div className="flex items-center justify-center gap-2 mb-1">
@@ -91,8 +103,8 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
             </div>
             <p className="text-blue-100 text-xs font-medium uppercase tracking-widest mb-2">Payment Receipt</p>
             <div className="bg-white/20 rounded-xl px-4 py-2">
-              <p className="text-white text-2xl font-bold">₦{Number(amount).toLocaleString("en-NG")}</p>
-              <p className="text-blue-100 text-xs mt-0.5">Total Amount Paid</p>
+              <p className="text-white text-2xl font-bold">₦{enteredAmount.toLocaleString("en-NG")}</p>
+              <p className="text-blue-100 text-xs mt-0.5">Amount Paid for Goods</p>
             </div>
           </div>
 
@@ -149,7 +161,7 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
             ))}
           </div>
 
-          {/* Items */}
+          {/* Items — scaled to match entered amount */}
           <div className="px-6 py-3 border-b border-dashed border-gray-300">
             <p className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">Items Purchased</p>
             <div>
@@ -159,7 +171,7 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
                 <span className="w-20 text-right">Unit</span>
                 <span className="w-24 text-right">Amount</span>
               </div>
-              {PURCHASE_ITEMS.map((item, i) => (
+              {scaledItems.map((item, i) => (
                 <div key={i} className="py-2 border-b border-gray-100">
                   <div className="flex items-start gap-1">
                     <div className="flex-1 min-w-0">
@@ -167,46 +179,42 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
                       <p className="text-xs text-gray-400 font-mono">{item.sku}</p>
                     </div>
                     <span className="w-8 text-center text-xs text-gray-600 pt-0.5">{item.qty}</span>
-                    <span className="w-20 text-right text-xs text-gray-600 pt-0.5">₦{item.unitPrice.toLocaleString()}</span>
-                    <span className="w-24 text-right text-xs font-semibold text-gray-800 pt-0.5">₦{(item.qty * item.unitPrice).toLocaleString()}</span>
+                    <span className="w-20 text-right text-xs text-gray-600 pt-0.5">₦{item.scaledUnitPrice.toLocaleString()}</span>
+                    <span className="w-24 text-right text-xs font-semibold text-gray-800 pt-0.5">₦{item.scaledLineTotal.toLocaleString()}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Totals */}
+          {/* Totals — all derived from entered amount */}
           <div className="px-6 py-3 border-b border-dashed border-gray-300 space-y-1.5">
             <div className="flex justify-between">
-              <span className="text-xs text-gray-500">Subtotal</span>
-              <span className="text-xs font-semibold text-gray-800">₦{subtotal.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-xs text-gray-500">VAT (7.5%)</span>
-              <span className="text-xs font-semibold text-gray-800">₦{vat.toLocaleString()}</span>
+              <span className="text-xs text-gray-500">Amount for Goods</span>
+              <span className="text-xs font-semibold text-gray-800">₦{enteredAmount.toLocaleString("en-NG")}</span>
             </div>
 
-            {/* Metrix Processing Fee — highlighted for transparency */}
+            {/* Metrix 3% Processing Fee */}
             <div className="flex justify-between items-center bg-blue-50 border border-blue-100 rounded-lg px-2 py-1.5">
               <div className="flex items-center gap-1.5">
                 <Zap className="w-3 h-3 text-blue-500" />
                 <span className="text-xs text-blue-700 font-semibold">Metrix Processing Fee (3%)</span>
               </div>
-              <span className="text-xs font-bold text-blue-700">+₦{processingFee.toLocaleString()}</span>
+              <span className="text-xs font-bold text-blue-700">+₦{processingFee.toLocaleString("en-NG")}</span>
             </div>
 
-            {/* Cashback */}
+            {/* Smartmonie 1.5% Cashback */}
             <div className="flex justify-between items-center bg-amber-50 border border-amber-100 rounded-lg px-2 py-1.5">
               <div className="flex items-center gap-1">
                 <Trophy className="w-3 h-3 text-amber-500" />
                 <span className="text-xs text-amber-700 font-semibold">Smartmonie Cashback (1.5%)</span>
               </div>
-              <span className="text-xs font-bold text-amber-700">-₦{cashback.toLocaleString()}</span>
+              <span className="text-xs font-bold text-amber-700">−₦{cashback.toLocaleString("en-NG")}</span>
             </div>
 
             <div className="flex justify-between items-center border-t-2 border-gray-300 pt-2">
-              <span className="text-sm font-bold text-gray-800">TOTAL PAID</span>
-              <span className="text-sm font-bold text-gray-900">₦{total.toLocaleString()}</span>
+              <span className="text-sm font-bold text-gray-800">TOTAL CHARGED</span>
+              <span className="text-sm font-bold text-gray-900">₦{totalCharged.toLocaleString("en-NG")}</span>
             </div>
           </div>
 
@@ -217,7 +225,7 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
               <div>
                 <p className="text-xs font-bold text-amber-800">Congratulations!</p>
                 <p className="text-xs text-amber-700">
-                  You've received <span className="font-bold">₦{cashback.toLocaleString()}</span> (1.5%) cashback for all purchases. Credited to your Smartmonie wallet.
+                  You've received <span className="font-bold">₦{cashback.toLocaleString("en-NG")}</span> (1.5% of ₦{enteredAmount.toLocaleString("en-NG")}) cashback. Credited to your Smartmonie wallet.
                 </p>
               </div>
             </div>
