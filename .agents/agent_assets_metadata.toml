@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "USYmUuwpx1OMB9dWrC2Hu"
+uri = "file://artifacts/vaultx/src/assets/hero-bg.png"
+type = "image"
+title = "Abstract biometric face scan network"
+
+[[generated]]
+id = "0E_fcASO4UlhR6J_n7xAd"
+uri = "file://artifacts/vaultx/src/assets/fingerprint-scan.png"
+type = "image"
+title = "High-tech fingerprint scan matrix"
