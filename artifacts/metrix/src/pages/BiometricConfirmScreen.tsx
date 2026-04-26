@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Shield, Fingerprint, CheckCircle } from "lucide-react";
 import { FingerprintScanner } from "../components/FingerprintScanner";
+import { useApiEvent } from "../context/ApiLogContext";
 import { type Bank } from "../data/banks";
 
 interface BiometricConfirmScreenProps {
@@ -12,15 +13,22 @@ interface BiometricConfirmScreenProps {
 }
 
 export function BiometricConfirmScreen({ bank, amount, narration, onNext, onBack }: BiometricConfirmScreenProps) {
+  const fire = useApiEvent();
   const [status, setStatus] = useState<"idle" | "scanning" | "done">("idle");
+  const [verifyMs, setVerifyMs] = useState<number | null>(null);
 
   const handleScan = () => {
     setStatus("scanning");
+    const ms = Math.floor(Math.random() * 160 + 160); // 160–320ms
+    setVerifyMs(ms);
+    fire("POST", "/v1/biometric/fingerprint/capture", 80);
+    fire("POST", "/v1/biometric/fingerprint/verify", 80, ms);
+    fire("POST", "/v1/payment/authorize", 80 + ms + 60);
   };
 
   const handleComplete = () => {
     setStatus("done");
-    setTimeout(onNext, 800);
+    setTimeout(onNext, 900);
   };
 
   return (
@@ -99,18 +107,30 @@ export function BiometricConfirmScreen({ bank, amount, narration, onNext, onBack
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-4 mb-6">
+          <div className="flex flex-col items-center gap-3 mb-6">
             <FingerprintScanner isScanning={status === "scanning"} onComplete={handleComplete} />
 
-            {status === "idle" && (
-              <p className="text-sm text-muted-foreground text-center">Place your finger on the sensor below</p>
-            )}
-            {status === "scanning" && (
-              <p className="text-sm text-primary font-medium animate-pulse text-center">Scanning your fingerprint...</p>
-            )}
-            {status === "done" && (
-              <p className="text-sm text-green-600 font-semibold text-center">Fingerprint Verified!</p>
-            )}
+            <div className="flex items-center justify-center gap-3 min-h-[20px]">
+              {status === "idle" && (
+                <p className="text-sm text-muted-foreground text-center">Place your finger on the sensor below</p>
+              )}
+              {status === "scanning" && (
+                <p className="text-sm text-primary font-medium animate-pulse text-center">Scanning your fingerprint...</p>
+              )}
+              {status === "done" && (
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-green-600 font-semibold text-center">Fingerprint Verified!</p>
+                  {verifyMs && (
+                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2 py-0.5 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      {(verifyMs / 1000).toFixed(2)}s
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {status === "idle" && (

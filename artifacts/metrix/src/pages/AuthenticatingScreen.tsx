@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { Database, Shield, CheckCircle, Loader2 } from "lucide-react";
+import { useApiEvent } from "../context/ApiLogContext";
 
 interface AuthenticatingScreenProps {
   onNext: () => void;
 }
 
 export function AuthenticatingScreen({ onNext }: AuthenticatingScreenProps) {
+  const fire = useApiEvent();
   const [step, setStep] = useState(0);
+  const [verifyMs] = useState(() => Math.floor(Math.random() * 180 + 190)); // 190–370ms
+
   const steps = [
     { label: "Connecting to NIBSS database", icon: Database, duration: 900 },
     { label: "Verifying BVN credentials", icon: Shield, duration: 1100 },
@@ -17,10 +21,18 @@ export function AuthenticatingScreen({ onNext }: AuthenticatingScreenProps) {
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
     let total = 0;
+
     steps.forEach((s, i) => {
       timers.push(setTimeout(() => setStep(i + 1), total));
       total += s.duration;
     });
+
+    // API calls staggered through the scan
+    fire("POST", "/v1/biometric/face/capture", 300);
+    fire("POST", "/v1/biometric/face/analyse", 1100);
+    fire("POST", "/v1/biometric/face/verify", 2200, verifyMs);
+    fire("GET",  "/v1/user/bvn/lookup", 2200 + verifyMs + 80);
+
     timers.push(setTimeout(onNext, total + 400));
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -60,20 +72,17 @@ export function AuthenticatingScreen({ onNext }: AuthenticatingScreenProps) {
               const Icon = s.icon;
               const isDone = step > i + 1;
               const isActive = step === i + 1;
-              const isPending = step < i + 1;
               return (
                 <div
                   key={i}
                   className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${
-                    isDone ? "bg-green-50 border border-green-200" :
+                    isDone   ? "bg-green-50 border border-green-200" :
                     isActive ? "bg-primary/10 border border-primary/30" :
-                    "bg-muted/30 border border-transparent"
+                               "bg-muted/30 border border-transparent"
                   }`}
                 >
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                    isDone ? "bg-green-500" :
-                    isActive ? "bg-primary" :
-                    "bg-muted"
+                    isDone ? "bg-green-500" : isActive ? "bg-primary" : "bg-muted"
                   }`}>
                     {isDone ? (
                       <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -86,9 +95,7 @@ export function AuthenticatingScreen({ onNext }: AuthenticatingScreenProps) {
                     )}
                   </div>
                   <span className={`text-sm font-medium transition-colors duration-300 ${
-                    isDone ? "text-green-700" :
-                    isActive ? "text-primary" :
-                    "text-muted-foreground"
+                    isDone ? "text-green-700" : isActive ? "text-primary" : "text-muted-foreground"
                   }`}>
                     {s.label}
                   </span>
@@ -103,9 +110,20 @@ export function AuthenticatingScreen({ onNext }: AuthenticatingScreenProps) {
               style={{ width: `${(step / steps.length) * 100}%` }}
             />
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-2">
-            {step < steps.length ? "Establishing secure connection..." : "Authentication complete"}
-          </p>
+
+          <div className="mt-3 flex items-center justify-between min-h-[20px]">
+            <p className="text-xs text-muted-foreground">
+              {step < steps.length ? "Establishing secure connection..." : "Authentication complete"}
+            </p>
+            {step >= steps.length && (
+              <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1 animate-fade-up">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Face verified in {(verifyMs / 1000).toFixed(2)}s
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

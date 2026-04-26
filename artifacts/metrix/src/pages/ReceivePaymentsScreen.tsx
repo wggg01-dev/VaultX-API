@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CheckCircle, ArrowDownLeft, Fingerprint, Clock, ArrowLeft, X, Zap } from "lucide-react";
 import { PENDING_PAYMENTS, type PendingPayment } from "../data/payments";
 import { FingerprintScanner } from "../components/FingerprintScanner";
+import { useApiEvent } from "../context/ApiLogContext";
 import { USER_BVN_DATA } from "../data/banks";
 
 interface ReceivePaymentsScreenProps {
@@ -10,6 +11,7 @@ interface ReceivePaymentsScreenProps {
 }
 
 export function ReceivePaymentsScreen({ onBack, onDone }: ReceivePaymentsScreenProps) {
+  const fire = useApiEvent();
   const [payments] = useState(PENDING_PAYMENTS);
   const [selected, setSelected] = useState<PendingPayment | null>(null);
   const [approveAllMode, setApproveAllMode] = useState(false);
@@ -32,7 +34,12 @@ export function ReceivePaymentsScreen({ onBack, onDone }: ReceivePaymentsScreenP
     setScanStatus("idle");
   };
 
-  const handleScan = () => setScanStatus("scanning");
+  const handleScan = () => {
+    setScanStatus("scanning");
+    fire("POST", "/v1/biometric/fingerprint/capture", 80);
+    fire("POST", "/v1/biometric/fingerprint/verify",  80);
+    fire("POST", approveAllMode ? "/v1/payments/receive/bulk" : "/v1/payments/receive", 350);
+  };
 
   const handleScanComplete = () => {
     setScanStatus("done");

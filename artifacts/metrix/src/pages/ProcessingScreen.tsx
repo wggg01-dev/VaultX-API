@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Wifi, CreditCard, CheckCircle, Loader2, Zap } from "lucide-react";
+import { useApiEvent } from "../context/ApiLogContext";
 
 interface ProcessingScreenProps {
   amount: string;
@@ -7,22 +8,32 @@ interface ProcessingScreenProps {
 }
 
 export function ProcessingScreen({ amount, onNext }: ProcessingScreenProps) {
+  const fire = useApiEvent();
   const [step, setStep] = useState(0);
 
   const steps = [
-    { label: "Initiating secure transaction", icon: Wifi, duration: 800 },
-    { label: "Debiting your account", icon: CreditCard, duration: 1000 },
-    { label: "Crediting merchant account", icon: Zap, duration: 900 },
-    { label: "Transaction confirmed", icon: CheckCircle, duration: 700 },
+    { label: "Initiating secure transaction", icon: Wifi,        duration: 800  },
+    { label: "Debiting your account",         icon: CreditCard,  duration: 1000 },
+    { label: "Crediting merchant account",    icon: Zap,         duration: 900  },
+    { label: "Transaction confirmed",         icon: CheckCircle, duration: 700  },
   ];
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
     let total = 0;
+
     steps.forEach((s, i) => {
       timers.push(setTimeout(() => setStep(i + 1), total));
       total += s.duration;
     });
+
+    // API calls mapped to each processing step
+    fire("POST", "/v1/payment/initiate",      0);
+    fire("POST", "/v1/ledger/debit",          800);
+    fire("POST", "/v1/ledger/credit",         1800);
+    fire("GET",  "/v1/payment/status",        2700);
+    fire("POST", "/v1/transaction/record",    2900);
+
     timers.push(setTimeout(onNext, total + 500));
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -78,21 +89,19 @@ export function ProcessingScreen({ amount, onNext }: ProcessingScreenProps) {
           <div className="space-y-2 mb-6">
             {steps.map((s, i) => {
               const Icon = s.icon;
-              const isDone = step > i + 1;
+              const isDone   = step > i + 1;
               const isActive = step === i + 1;
               return (
                 <div
                   key={i}
                   className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${
-                    isDone ? "bg-green-50 border border-green-200" :
+                    isDone   ? "bg-green-50 border border-green-200" :
                     isActive ? "bg-primary/10 border border-primary/30" :
-                    "bg-muted/30 border border-transparent"
+                               "bg-muted/30 border border-transparent"
                   }`}
                 >
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                    isDone ? "bg-green-500" :
-                    isActive ? "bg-primary" :
-                    "bg-muted"
+                    isDone ? "bg-green-500" : isActive ? "bg-primary" : "bg-muted"
                   }`}>
                     {isDone ? (
                       <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -105,9 +114,7 @@ export function ProcessingScreen({ amount, onNext }: ProcessingScreenProps) {
                     )}
                   </div>
                   <span className={`text-sm font-medium transition-colors duration-300 ${
-                    isDone ? "text-green-700" :
-                    isActive ? "text-primary" :
-                    "text-muted-foreground"
+                    isDone ? "text-green-700" : isActive ? "text-primary" : "text-muted-foreground"
                   }`}>
                     {s.label}
                   </span>
