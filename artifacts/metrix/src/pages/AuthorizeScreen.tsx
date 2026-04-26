@@ -21,14 +21,14 @@ export function AuthorizeScreen({ onNext }: AuthorizeScreenProps) {
   };
 
   return (
-    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 w-full max-w-sm animate-fade-up">
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md animate-fade-up">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-lg">
@@ -94,7 +94,7 @@ export function AuthorizeScreen({ onNext }: AuthorizeScreenProps) {
         </div>
 
         <p className="text-center text-blue-200/60 text-xs mt-6">
-          Powered by Smartmonie · Processed by Metrix
+          Powered by Smartmonie · Processed by VaultX
         </p>
       </div>
     </div>

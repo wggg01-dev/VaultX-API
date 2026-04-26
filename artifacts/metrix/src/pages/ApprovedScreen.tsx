@@ -28,7 +28,7 @@ export function ApprovedScreen({ bank, amount, onNext }: ApprovedScreenProps) {
   }, []);
 
   return (
-    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-64 h-64 bg-green-400/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
@@ -49,7 +49,7 @@ export function ApprovedScreen({ bank, amount, onNext }: ApprovedScreenProps) {
         ))}
       </div>
 
-      <div className="relative z-10 w-full max-w-sm">
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-white tracking-tight">Smartmonie</h1>
         </div>
@@ -68,7 +68,7 @@ export function ApprovedScreen({ bank, amount, onNext }: ApprovedScreenProps) {
               <h2 className="text-2xl font-bold text-foreground mb-1">Payment Approved!</h2>
               <p className="text-3xl font-bold text-green-600 mt-2">₦{Number(amount).toLocaleString("en-NG")}</p>
               <p className="text-sm text-muted-foreground mt-1">Successfully debited from {bank.name}</p>
-              <p className="text-xs text-muted-foreground/70 mt-0.5">Processed by Metrix</p>
+              <p className="text-xs text-muted-foreground/70 mt-0.5">Processed by VaultX</p>
             </div>
           </div>
 

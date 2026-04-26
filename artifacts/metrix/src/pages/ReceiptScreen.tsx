@@ -60,7 +60,7 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-indigo-400/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 w-full max-w-sm pt-4">
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md pt-4">
         <div className="text-center mb-4">
           <h1 className="text-2xl font-bold text-white tracking-tight">Smartmonie</h1>
         </div>
@@ -99,7 +99,7 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
             </div>
             <div className="flex items-center justify-center gap-1 mb-3">
               <Zap className="w-3 h-3 text-blue-200" />
-              <p className="text-blue-200 text-xs font-medium">Processed by Metrix</p>
+              <p className="text-blue-200 text-xs font-medium">Processed by VaultX</p>
             </div>
             <p className="text-blue-100 text-xs font-medium uppercase tracking-widest mb-2">Payment Receipt</p>
             <div className="bg-white/20 rounded-xl px-4 py-2">
@@ -131,7 +131,7 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
             {[
               { label: "Transaction Ref", value: txRef },
               { label: "Merchant", value: "Smartmonie Merchant Store" },
-              { label: "Payment Processor", value: "Metrix Payments Ltd" },
+              { label: "Payment Processor", value: "VaultX Payments Ltd" },
               { label: "Terminal ID", value: "SMN-TRM-00124" },
               { label: "Bank", value: bank.name },
               { label: "Account", value: "XXXX XXXX XX45" },
@@ -198,7 +198,7 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
             <div className="flex justify-between items-center bg-blue-50 border border-blue-100 rounded-lg px-2 py-1.5">
               <div className="flex items-center gap-1.5">
                 <Zap className="w-3 h-3 text-blue-500" />
-                <span className="text-xs text-blue-700 font-semibold">Metrix Processing Fee (3%)</span>
+                <span className="text-xs text-blue-700 font-semibold">VaultX Processing Fee (3%)</span>
               </div>
               <span className="text-xs font-bold text-blue-700">+₦{processingFee.toLocaleString("en-NG")}</span>
             </div>
@@ -251,10 +251,10 @@ export function ReceiptScreen({ bank, amount, narration, onDone }: ReceiptScreen
           {/* Footer */}
           <div className="bg-gray-800 px-6 py-4 text-center">
             <p className="text-xs font-semibold text-gray-300">Smartmonie</p>
-            <p className="text-xs text-gray-400 mt-0.5">Payment processed by Metrix Payments Ltd</p>
+            <p className="text-xs text-gray-400 mt-0.5">Payment processed by VaultX Payments Ltd</p>
             <div className="border-t border-gray-700 mt-2 pt-2">
               <p className="text-xs text-gray-500">www.smartmonie.ng | support@smartmonie.ng</p>
-              <p className="text-xs text-gray-600 mt-0.5">Licensed by CBN · NDIC Insured · Powered by Metrix</p>
+              <p className="text-xs text-gray-600 mt-0.5">Licensed by CBN · NDIC Insured · Powered by VaultX</p>
             </div>
           </div>
         </div>

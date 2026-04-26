@@ -26,13 +26,13 @@ export function AuthenticatingScreen({ onNext }: AuthenticatingScreenProps) {
   }, []);
 
   return (
-    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-20 w-64 h-64 bg-indigo-400/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 w-full max-w-sm animate-fade-up">
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md animate-fade-up">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-white tracking-tight">Smartmonie</h1>
         </div>

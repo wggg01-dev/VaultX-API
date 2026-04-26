@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Metrix"
+title = "VaultX"
 version = "1.0.0"
 id = "artifacts/metrix"
 router = "path"
