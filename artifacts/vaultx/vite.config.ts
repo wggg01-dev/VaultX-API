@@ -37,17 +37,12 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port,
-    strictPort: true,
-    host: "0.0.0.0",
-    allowedHosts: true,
-    fs: {
-      strict: true,
-    },
-  },
-  preview: {
-    port,
-    host: "0.0.0.0",
-    allowedHosts: true,
-  },
-});
+  port: 8080,
+  host: "0.0.0.0",
+  allowedHosts: true,
+},
+preview: {
+  port: 8080,
+  host: "0.0.0.0",
+  allowedHosts: true,
+},
