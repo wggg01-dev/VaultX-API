@@ -298,7 +298,7 @@ export default function LandingPage() {
               See VaultX in action through our partner app demo. Experience sub-second biometric payments firsthand.
             </p>
             <Button asChild size="lg" className="h-16 px-10 text-xl bg-primary hover:bg-primary/90 text-primary-foreground">
-              <a href="/" data-testid="button-bottom-demo"></a>
+              <a href="https://metrix-4Olscgyxy-wggg01-devs-projects.vercel.app" data-testid="button-bottom-demo"></a>
                 Launch Live Demo
               </a>
             </Button>
